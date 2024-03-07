@@ -1,0 +1,14 @@
+Dockerfile
+.github
+.env
+*.md
+*.log
+temp/
+tmp/
+
+.DS_Store
+
+.git
+.gitignore
+.vscode
+build
