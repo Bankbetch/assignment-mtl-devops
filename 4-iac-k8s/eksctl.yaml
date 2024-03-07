@@ -1,0 +1,74 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: demo-staging
+  region: ap-southeast-1
+  version: "1.29"
+
+vpc:
+  id: "vpc-xxxxxx"
+  subnets:
+    private:
+      ap-southeast-1a: { id: subnet-xxxxxx	}
+      ap-southeast-1b: { id: subnet-xxxxxx2 }
+
+
+managedNodeGroups:
+  - name: demo-staging-spot-ap-southeast-1a
+    availabilityZones:
+      - ap-southeast-1a
+    instanceTypes: ["c5.large", "c5a.large"]
+    spot: true
+    tags:
+      service: demo
+      isStaging: staging
+    minSize: 1
+    maxSize: 10
+    desiredCapacity: 0
+    volumeSize: 50
+    volumeType: gp3
+    privateNetworking: true
+    ssh:
+      allow: false
+    iam:
+      withAddonPolicies:
+        ebs: true
+        autoScaler: true
+        efs: true
+        albIngress: true
+
+  - name: demo-staging-spot-ap-southeast-1b
+    availabilityZones:
+      - ap-southeast-1b
+    instanceTypes: ["c5.large", "c5a.large"]
+    spot: true
+    tags:
+      service: demo
+      isStaging: staging
+    minSize: 1
+    maxSize: 10
+    desiredCapacity: 0
+    volumeSize: 50
+    volumeType: gp3
+    privateNetworking: true
+    ssh:
+      allow: false
+    iam:
+      withAddonPolicies:
+        ebs: true
+        autoScaler: true
+        efs: true
+        albIngress: true
+
+addons:
+- name: vpc-cni
+  version: v1.16.0-eksbuild.1
+- name: coredns
+  version: v1.10.1-eksbuild.7
+- name: aws-ebs-csi-driver
+  version: v1.27.0-eksbuild.1
+- name: kube-proxy
+  version: v1.28.4-eksbuild.4
+- name: aws-efs-csi-driver
+  version: v1.7.0-eksbuild.1
