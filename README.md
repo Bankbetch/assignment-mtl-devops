@@ -1,0 +1,1 @@
+dockerhubUrl: https://hub.docker.com/r/bankbetch/example-go
