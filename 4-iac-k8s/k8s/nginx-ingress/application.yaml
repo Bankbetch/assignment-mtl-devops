@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: demo-ingress-nginx
+spec:
+  destination:
+    name: demo-staging
+    namespace: ingress-nginx
+  source:
+    repoURL: repo/4-iac-k8s/k8s
+    targetRevision: main
+    path: "./ingress-nginx"
+    helm:
+      valueFiles: 
+        - value.yaml
+  project: demo
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

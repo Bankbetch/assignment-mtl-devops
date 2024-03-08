@@ -1,0 +1,48 @@
+ingress-nginx:
+  controller:
+    autoscaling:
+      annotations: {}
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 4
+      targetCPUUtilizationPercentage: 50
+      targetMemoryUtilizationPercentage: 50
+    resources:
+      limits:
+        cpu: 100m
+        memory: 120Mi
+      requests:
+        cpu: 100m
+        memory: 120Mi
+    service:
+      targetPorts:
+        http: http
+        https: http
+      annotations:
+        service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+        service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:ap-southeast-1:xxx:certificate/xxx
+        service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
+        service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "120"
+        service.beta.kubernetes.io/aws-load-balancer-type: nlb
+        service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: 'true'
+        service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: '*'
+        service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
+      externalTrafficPolicy: Local
+    config:
+      allow-snippet-annotations: "false"
+      use-forwarded-headers: "true"
+      enable-real-ip: "true"
+      hide-headers: X-Powered-By
+      proxy_pass_request_headers: "on"
+      enable-underscores-in-headers: "true"
+      proxy-body-size: "20m"
+      forwarded-for-header: proxy_protocol
+      compute-full-forwarded-for: "true"
+      proxy-add-original-uri-header: "true"
+      brotli-level: "6"
+      brotli-types: text/xml image/svg+xml application/x-font-ttf image/vnd.microsoft.icon
+        application/x-font-opentype application/json font/eot application/vnd.ms-fontobject
+        application/javascript font/otf application/xml application/xhtml+xml text/javascript  application/x-javascript
+        text/plain application/x-font-truetype application/xml+rss image/x-icon font/opentype
+        text/css image/x-win-bitmap
+      enable-brotli: "true"
