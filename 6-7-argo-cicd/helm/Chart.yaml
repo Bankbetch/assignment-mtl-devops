@@ -1,0 +1,9 @@
+apiVersion: v1
+description: Bankbetch Service Helm Chart
+name: Bankbetch
+version: 0.0.1
+appVersion: Bankbetch-1
+home: http://bankbetch
+maintainers:
+  - name: Owner
+    email: jiraphun.jrb@gmail.com

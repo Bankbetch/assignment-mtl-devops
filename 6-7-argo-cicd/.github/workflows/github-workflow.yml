@@ -1,0 +1,85 @@
+name: CI
+
+# 1
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push events but only for the master branch
+  push:
+    branches:
+      - develop
+      - uat
+      - main
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Image version'
+        required: true
+#2
+env:
+  IMAGE_NAME: "example-go"
+  DEFAULT_HELM_PATH: "values/example/api"
+  CI_SERVER_HOST: "github.com"
+  ARGOCD_DEMO_API_NAME: demo-api
+
+#3
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Log in Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build container image
+        run: |
+          docker build -f 1-2-application/Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/$(echo $IMAGE_NAME):${GITHUB_REF##*/}-$(echo $GITHUB_RUN_NUMBER) .
+
+      - name: Push image to Docker Hub
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/$(echo $IMAGE_NAME):${GITHUB_REF##*/}-$(echo $GITHUB_RUN_NUMBER)
+
+  cd:
+    runs-on: ubuntu-latest
+    needs: build_and_push
+    container:
+      image: docker://bankbetch/git-ops:0.0.1
+    steps:
+      - name: Run
+        run: |
+          export REPO=$REPO
+          export GIT_USERNAME=${{ secrets.GIT_USERNAME }}
+          export GIT_TOKEN=${{ secrets.GIT_TOKEN }}
+          export CI_SERVER_HOST=$CI_SERVER_HOST
+          export CI_PROJECT_PATH=${{ secrets.CI_PROJECT_PATH }}
+          export BITBUCKET_COMMIT=$GITHUB_RUN_NUMBER
+          export DEFAULT_HELM_PATH=$DEFAULT_HELM_PATH
+          export BITBUCKET_BRANCH=${GITHUB_REF##*/}
+          export IMAGE_BRANCH_TAG=${GITHUB_REF##*/}-$(echo $GITHUB_RUN_NUMBER)
+          export BRANCH=main
+          sh /app/run.sh
+
+  argo_sync:
+    runs-on: ubuntu-latest
+    needs: cd
+    container:
+      image: argoproj/argocd:v2.6.15
+    steps:
+      - name: Run
+        run: |
+          export REPO=$REPO
+          export ARGOCD_SERVER=${{ secrets.ARGOCD_SERVER }}
+          export ARGOCD_DEMO_STAGING_USERNAME=${{ secrets.ARGOCD_DEMO_STAGING_USERNAME }}
+          export ARGOCD_DEMO_STAGING_PASSWORD=${{ secrets.ARGOCD_DEMO_STAGING_PASSWORD }}
+
+          argocd login $ARGOCD_SERVER --insecure --username $ARGOCD_DEMO_STAGING_USERNAME --password $ARGOCD_DEMO_STAGING_PASSWORD
+          argocd app sync $ARGOCD_DEMO_API_NAME-${GITHUB_REF##*/}
+          argocd app wait $ARGOCD_DEMO_API_NAME-${GITHUB_REF##*/}
