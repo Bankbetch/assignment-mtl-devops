@@ -22,7 +22,7 @@ managedNodeGroups:
     spot: true
     tags:
       service: demo
-      isStaging: staging
+      isStaging: true
     minSize: 1
     maxSize: 10
     desiredCapacity: 0
