@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: demo-api-dev
+  namespace: pipeline
+  annotations:
+    notifications.argoproj.io/subscribe.on-deployed.slack: argocd-
+spec:
+  destination:
+    namespace: demo-dev
+    server: http://localhost
+  project: demo
+  source:
+    helm:
+      valueFiles:
+      - values/example/api/dev.yaml
+    path: ./
+    repoURL: 'https://repo'
+    targetRevision: main
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
