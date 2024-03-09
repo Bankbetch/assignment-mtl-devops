@@ -1,0 +1,18 @@
+{{- $namespace := .Values.app.namespace -}}
+---
+{{- if .Values.volumes.configMap }}
+{{- range $key, $value := .Values.volumes.configMap }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $value.name }}
+  namespace: {{ $namespace }}
+data:
+{{- range $k, $data := $value.subPath }}
+    {{ $data.subPath }}: |-
+      {{ $data.data | indent 6 | trim }}
+{{- end }}
+---
+{{- end }}
+{{- end }}
+

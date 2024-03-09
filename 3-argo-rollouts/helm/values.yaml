@@ -1,0 +1,90 @@
+app:
+  annotations: {}
+  namespace: application
+  image: null
+  tag: "dev-1"
+  imagePullSecrets: gitlab-secret
+  port: 80
+  export: 80
+  healthCheckPath: {}
+  customHealthCheck: {}
+  pullPolicy: IfNotPresent
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "100m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+  containers: {}
+# Docs: https://kubernetes.io/docs/tasks/configure-pod-container/attach-handler-lifecycle-event/
+  lifecycle: {}
+  topologySpreadConstraints: false
+  labels: {}
+  affinity: {}
+  affinityMultiAZ: false
+  revisionHistoryLimit: 5
+  enabledDeployment: true
+  strategy:
+    rollingUpdate:
+      maxSurge: 50%
+      maxUnavailable: 25%
+    type: RollingUpdate
+
+service: {}
+internalIngress:
+  enabled: false
+
+ingress:
+  enabled: false
+  useELBConditions: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    # nginx.ingress.kubernetes.io/server-tokens: "False"
+    # nginx.ingress.kubernetes.io/proxy-read-timeout: 1200
+    # nginx.ingress.kubernetes.io/proxy-send-timeout: 1200
+  hosts: []
+    # - host: bankbetch.dev
+    #   path: "/"
+  tls: []
+    # - secretName: "bankbetch.dev-tls"
+    #   hosts:
+    #     - bankbetch.dev
+
+  serviceType: ClusterIP
+autoscaling:
+  default: true
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 1
+  cpu:
+    targetAverageValue: 60
+    type: Utilization
+  memory: {}
+extraEnv: {}
+envFrom: {}
+hcpVault: {}
+volumes:
+  volumeMounts:
+    - name: tz-config
+      mountPath: /etc/localtime
+      subPath: {}
+  pvc: []
+  emptyDir: {}
+  hostPath:
+    - name: tz-config
+      path: /usr/share/zoneinfo/Asia/Bangkok
+  configMap: []
+  
+nodeSelector: []
+
+serviceAccount: {}
+
+cron: {}
+
+terminationGracePeriodSeconds: {}
+
+storage:
+  enabled: false
+  efs: {}
