@@ -58,9 +58,11 @@ autoscaling:
   #       threshold: '0.4'
   #       query: 'sum(max(rate(container_cpu_usage_seconds_total{container=~"demo-api-dev"}[30s]))) by (container)'
 
+#  Use multiple secret from .yaml file or inline
 envFrom: secrets-example-api-dev
-hcpVault: 
-  dataKey: example/api/dev
+extraEnv:
+  DB_HOST: "localhost"
+  DB_PORT: "5433"
 
 volumes:
   volumeMounts:
