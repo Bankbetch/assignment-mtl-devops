@@ -24,7 +24,7 @@ app:
   affinity: {}
   affinityMultiAZ: false
   revisionHistoryLimit: 5
-  enabledDeployment: true
+  enabledArgoRollouts: false
   strategy:
     rollingUpdate:
       maxSurge: 50%

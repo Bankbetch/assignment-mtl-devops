@@ -45,9 +45,9 @@ spec:
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   scaleTargetRef:
-    kind: Deployment
+    kind: {{ if .Values.enabledArgoRollouts }}Deployment{{ else }}Rollout{{ end }}Deployment
     name: {{ .Release.Name }}
-    apiVersion: apps/v1
+    apiVersion: {{ if .Values.enabledArgoRollouts }}argoproj.io/v1alpha1{{ else }}apps/v1{{ end }}
 
 {{- else }}
 apiVersion: keda.sh/v1alpha1

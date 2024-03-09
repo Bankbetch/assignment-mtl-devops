@@ -1,7 +1,6 @@
 ---
-{{- if .Values.app.enabledDeployment}}
-apiVersion: argoproj.io/v1alpha1
-kind: Rollout
+apiVersion: {{ if .Values.enabledArgoRollouts }}argoproj.io/v1alpha1{{ else }}apps/v1{{ end }}
+kind: {{ if .Values.enabledArgoRollouts }}Deployment{{ else }}Rollout{{ end }}Deployment
 metadata:
   name: {{ .Release.Name }}
   namespace: {{ .Values.app.namespace }}
@@ -21,7 +20,15 @@ spec:
     matchLabels:
       app: {{ .Release.Name }}
   strategy:
+  {{- if and .Values.app.strategy .Values.app.strategy.blueGreen }}
+    blueGreen:
+        autoPromotionEnabled: {{ .Values.app.strategy.blueGreen.autoPromotionEnabled | default false }}
+        scaleDownDelaySeconds: {{ .Values.app.strategy.blueGreen.scaleDownDelaySeconds | default 30  }}
+        activeService: {{ .Release.Name }}
+        previewService: {{ .Release.Name }}-preview
+  {{- else }}
 {{ toYaml .Values.app.strategy | indent 4 }}
+  {{- end }}
   revisionHistoryLimit: {{ .Values.app.revisionHistoryLimit | default 5 }}
   template:
     metadata:
@@ -176,4 +183,3 @@ spec:
       nodeSelector:
 {{- toYaml .Values.nodeSelector | nindent 8 }}
       {{- end }}
-{{- end }}

@@ -19,12 +19,11 @@ app:
       cpu: 0.2
   topologySpreadConstraints: false
   terminationGracePeriodSeconds: 20
-  enabledDeployment: true
+  enabledArgoRollouts: true
   strategy:
-    rollingUpdate:
-      maxSurge: 50%
-      maxUnavailable: 25%
-    type: RollingUpdate
+    blueGreen:
+      autoPromotionEnabled: false
+      scaleDownDelaySeconds: 60
 
 ingress:
   enabled: true
@@ -36,7 +35,7 @@ ingress:
     nginx.ingress.kubernetes.io/use-regex: 'true'
   hosts:
     - host: dev.bankbetch.dev
-      path: "/api(/|$)(.*)"
+      path: "/blue-green(/|$)(.*)"
 
   serviceType: ClusterIP
 
