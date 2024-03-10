@@ -1,0 +1,16 @@
+apiVersion: v1
+metadata:
+  name: argocd-rbac-cm
+  namespace: pipeline
+data:
+  policy.demo: role:readonly
+  policy.default: ''
+  scopes: '[groups]'
+  policy.csv: |-
+    p, role:demo-ro, projects, get, demo, allow
+    p, role:demo-ro, applications, get, demo/*, allow
+    p, role:demo-ro, clusters, get, *, allow
+    p, role:demo-ro, repositories, get, *, allow
+    p, role:demo-ro, applications, sync, *, allow
+    g, demo, role:demo-ro
+kind: ConfigMap

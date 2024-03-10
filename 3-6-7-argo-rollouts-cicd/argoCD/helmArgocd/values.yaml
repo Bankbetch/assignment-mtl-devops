@@ -1,0 +1,308 @@
+global:
+  image:
+    # -- If defined, a repository applied to all ArgoCD deployments
+    # repository: alinbalutoiu/argocd
+    repository: argoproj/argocd
+
+apiVersionOverrides:
+  certmanager: ''
+  ingress: ''
+applicationSet:
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  args:
+    debug: false
+    dryRun: false
+    enableLeaderElection: false
+    metricsAddr: ':8080'
+    policy: sync
+    probeBindAddr: ':8081'
+  enabled: true
+  extraArgs: []
+  extraContainers: []
+  extraEnv: []
+  extraEnvFrom: []
+  extraVolumeMounts: []
+  extraVolumes: []
+  image:
+    imagePullPolicy: ''
+    repository: ''
+    tag: ''
+  imagePullSecrets: []
+  metrics:
+    enabled: false
+    service:
+      annotations: {}
+      labels: {}
+      portName: http-metrics
+      servicePort: 8085
+    serviceMonitor:
+      additionalLabels: {}
+      enabled: false
+      interval: 30s
+      metricRelabelings: []
+      namespace: ''
+      relabelings: []
+      scheme: ''
+      selector: {}
+      tlsConfig: {}
+  name: applicationset-controller
+  nodeSelector:
+    topology.ebs.csi.aws.com/zone: ap-southeast-1a
+  podAnnotations: {}
+  podLabels: {}
+  podSecurityContext: {}
+  priorityClassName: ''
+  replicaCount: 1
+  securityContext: {}
+  service:
+    annotations: {}
+    labels: {}
+    port: 7000
+    portName: webhook
+  serviceAccount:
+    annotations: {}
+    create: true
+    name: ''
+  tolerations: []
+  webhook:
+    ingress:
+      annotations: {}
+      enabled: false
+      extraPaths: []
+      hosts: []
+      ingressClassName: ''
+      labels: {}
+      pathType: Prefix
+      paths:
+        - /api/webhook
+      tls: []
+controller:
+  args:
+    appResyncPeriod: '180'
+    operationProcessors: '10'
+    repoServerTimeoutSeconds: '60'
+    selfHealTimeout: '5'
+    statusProcessors: '20'
+  clusterAdminAccess:
+    enabled: true
+  clusterRoleRules:
+    enabled: false
+    rules: []
+  containerPort: 8082
+  containerSecurityContext: {}
+  enableStatefulSet: true
+  env: []
+  envFrom: []
+  extraArgs: []
+  extraContainers: []
+  image:
+    imagePullPolicy: ''
+    repository: ''
+    tag: ''
+  imagePullSecrets: []
+  initContainers: []
+  livenessProbe:
+    failureThreshold: 3
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 1
+  logFormat: text
+  logLevel: info
+  metrics:
+    applicationLabels:
+      enabled: false
+      labels: []
+    enabled: false
+    rules:
+      enabled: false
+      spec: []
+    service:
+      annotations: {}
+      labels: {}
+      portName: http-metrics
+      servicePort: 8082
+    serviceMonitor:
+      additionalLabels: {}
+      enabled: false
+      interval: 30s
+      metricRelabelings: []
+      namespace: ''
+      relabelings: []
+      scheme: ''
+      selector: {}
+      tlsConfig: {}
+  name: application-controller
+  nodeSelector:
+    topology.ebs.csi.aws.com/zone: ap-southeast-1a
+  pdb:
+    annotations: {}
+    enabled: false
+    labels: {}
+  podAnnotations: {}
+  podLabels: {}
+  priorityClassName: ''
+  readinessProbe:
+    failureThreshold: 3
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 1
+  replicas: 1
+  resources:
+    limits:
+      cpu: 400m
+      memory: 1Gi
+    requests:
+      cpu: 400m
+      memory: 1Gi
+  service:
+    annotations: {}
+    labels: {}
+    port: 8082
+    portName: https-controller
+  serviceAccount:
+    annotations: {}
+    automountServiceAccountToken: true
+    create: true
+    name: argocd-application-controller
+  tolerations: []
+  topologySpreadConstraints: []
+  volumeMounts: []
+  volumes: []
+createAggregateRoles: false
+dex:
+  enabled: false
+  affinity: {}
+  containerPortGrpc: 5557
+  containerPortHttp: 5556
+  containerPortMetrics: 5558
+  containerSecurityContext: {}
+  env: []
+  envFrom: []
+  extraArgs: []
+  extraContainers: []
+  extraVolumeMounts: []
+  extraVolumes: []
+  image:
+    imagePullPolicy: ''
+    repository: ghcr.io/dexidp/dex
+    tag: v2.32.0
+  imagePullSecrets: []
+  initContainers: []
+  initImage:
+    imagePullPolicy: ''
+    repository: ''
+    tag: ''
+  livenessProbe:
+    enabled: false
+    failureThreshold: 3
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 1
+  metrics:
+    enabled: false
+    service:
+      annotations: {}
+      labels: {}
+      portName: http-metrics
+    serviceMonitor:
+      additionalLabels: {}
+      enabled: false
+      interval: 30s
+      metricRelabelings: []
+      namespace: ''
+      relabelings: []
+      scheme: ''
+      selector: {}
+      tlsConfig: {}
+  name: dex-server
+  nodeSelector:
+    topology.ebs.csi.aws.com/zone: ap-southeast-1a
+  pdb:
+    annotations: {}
+    enabled: false
+    labels: {}
+  podAnnotations: {}
+  podLabels: {}
+  priorityClassName: ''
+  readinessProbe:
+    enabled: false
+    failureThreshold: 3
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 1
+  resources: {}
+  serviceAccount:
+    annotations: {}
+    automountServiceAccountToken: true
+    create: true
+    name: argocd-dex-server
+  servicePortGrpc: 5557
+  servicePortGrpcName: grpc
+  servicePortHttp: 5556
+  servicePortHttpName: http
+  servicePortMetrics: 5558
+  tolerations: []
+  topologySpreadConstraints: []
+  volumeMounts:
+    - mountPath: /shared
+      name: static-files
+  volumes:
+    - emptyDir: {}
+      name: static-files
+externalRedis:
+  existingSecret: ''
+  host: ''
+  password: ''
+  port: 6379
+  secretAnnotations: {}
+extraObjects: []
+fullnameOverride: ''
+
+nameOverride: argocd
+notifications:
+  enabled: false
+  cm:
+    create: true
+    name: ''
+
+server:
+  extraArgs:
+    - '--insecure'
+  ingress:
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/whitelist-source-range: ip
+    enabled: true
+    extraPaths: []
+    hosts:
+      - argocd.bankbetch.dev
+    https: true
+    ingressClassName: ''
+    labels: {}
+    # pathType: Prefix
+    # paths:
+    #   - /
+    tls:
+      - hosts:
+          - argocd.bankbetch.dev
+        secretName: argocd.bankbetch.dev-tls
+  resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  nodeSelector:
+    topology.ebs.csi.aws.com/zone: ap-southeast-1a
